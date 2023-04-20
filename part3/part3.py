@@ -2,6 +2,7 @@ import socket
 import nacl.secret
 import nacl.utils
 from nacl.public import PrivateKey, Box
+import base64
 
 ###CRYPTO 1.0 REQUEST\r\n
 ###Name: Your Name\r\n
@@ -19,15 +20,21 @@ def main():
     pkey = skey.public_key
     
     msg = type + "\r\n" + "Name: " + name + "\r\n" + "PublicKey: " + pkey._public_key.hex() + "\r\n" + "\r\n"
+    print(msg)
     
-    while(True):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((HOST,PORT))
-            s.sendall(msg.encode())
-            data = s.recv(1024)
-            
+    msg = type + "\r\n" + "Name: " + name + "\r\n" + "PublicKey: " + base64.b16encode(pkey._public_key).decode('ascii') + "\r\n" + "\r\n"
+    print(msg)
+
+    
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST,PORT))
+        s.sendall(msg.encode())
+        data = s.recv(1024)
         
-            print(f"Received {data}")
+    
+        print(f"Received {data}")
+        
+    
 	
 if __name__ == "__main__":
 	main()
