@@ -19,8 +19,8 @@ def main():
     skey = PrivateKey.generate()
     pkey = skey.public_key
     
-    msg = type + "\r\n" + "Name: " + name + "\r\n" + "PublicKey: " + pkey._public_key.hex() + "\r\n" + "\r\n"
-    print(msg)
+    #msg = type + "\r\n" + "Name: " + name + "\r\n" + "PublicKey: " + pkey._public_key.hex() + "\r\n" + "\r\n"
+    #print(msg)
     
     msg = type + "\r\n" + "Name: " + name + "\r\n" + "PublicKey: " + base64.b16encode(pkey._public_key).decode('ascii') + "\r\n" + "\r\n"
     print(msg)
@@ -34,6 +34,16 @@ def main():
     
         print(f"Received {data}")
         
+    data_str = data.decode().split('\r\n')
+    shafer_pkey = nacl.public.PublicKey(base64.b16decode(data_str[2][11:]))
+    ctext = base64.b16decode(data_str[3][12:])
+    
+    print('ciphertext:\t',ctext)
+    
+    
+    my_box = Box(skey, shafer_pkey)
+    ptext = my_box.decrypt(ctext)
+    print('plaintext:\t',ptext.decode('ascii'))
     
 	
 if __name__ == "__main__":
